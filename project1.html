@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up & Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            padding: 8px;
+            margin: 10px;
+            width: 80%;
+            text-align: center;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="signupContainer">
+        <h2>Sign Up</h2>
+        <input type="text" id="newUsername" placeholder="Enter Username" required><br>
+        <input type="password" id="newPassword" placeholder="Enter Password" required><br>
+        <button onclick="signUp()">Sign Up</button>
+        <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+    </div>
+
+    <div class="container hidden" id="loginContainer">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Enter Username" required><br>
+        <input type="password" id="password" placeholder="Enter Password" required><br>
+        <button onclick="login()">Login</button>
+        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign up here</a></p>
+    </div>
+
+    <div class="container hidden" id="mainContent">
+        <h2>Adjust Font Size Based on Eye Power</h2>
+        <label for="right_eye">Right Eye Power:</label>
+        <input type="number" id="right_eye" step="0.1" placeholder="e.g. -2.5">
+        <br>
+        <label for="left_eye">Left Eye Power:</label>
+        <input type="number" id="left_eye" step="0.1" placeholder="e.g. -3.0">
+        <br>
+        <button onclick="adjustFontSize()">Apply</button>
+
+        <div class="container content">
+            <p>
+                The following is a sample paragraph. AI is a rapidly evolving field of computer science that enables machines to mimic human intelligence.
+                AI systems can analyze vast amounts of data, recognize patterns, and make decisions with minimal human intervention.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function signUp() {
+            let newUsername = document.getElementById('newUsername').value;
+            let newPassword = document.getElementById('newPassword').value;
+
+            if (newUsername && newPassword) {
+                localStorage.setItem("username", newUsername);
+                localStorage.setItem("password", newPassword);
+                alert("Sign up successful! Please log in.");
+                showLogin();
+            } else {
+                alert("Please enter valid details.");
+            }
+        }
+
+        function login() {
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+            let storedUsername = localStorage.getItem("username");
+            let storedPassword = localStorage.getItem("password");
+            
+            if (username === storedUsername && password === storedPassword) {
+                localStorage.setItem("loggedIn", "true");
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('signupContainer').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+            } else {
+                alert("Invalid credentials! Try again.");
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('signupContainer').classList.add('hidden');
+            document.getElementById('loginContainer').classList.remove('hidden');
+        }
+
+        function showSignUp() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('signupContainer').classList.remove('hidden');
+        }
+
+        function adjustFontSize() {
+            let rightEye = parseFloat(document.getElementById('right_eye').value);
+            let leftEye = parseFloat(document.getElementById('left_eye').value);
+            let fontSize = 14;
+
+            if (!isNaN(rightEye) && !isNaN(leftEye)) {
+                let worstEye = Math.max(Math.abs(rightEye), Math.abs(leftEye));
+
+                if (rightEye < 0 && leftEye < 0) {
+                    if (worstEye <= 2.0) fontSize = 14;
+                    else if (worstEye <= 3.5) fontSize = 16;
+                    else if (worstEye <= 5.0) fontSize = 18;
+                    else fontSize = 22;
+                } else if (rightEye > 0 && leftEye > 0) {
+                    if (worstEye <= 2.0) fontSize = 16;
+                    else if (worstEye <= 3.5) fontSize = 18;
+                    else if (worstEye <= 5.0) fontSize = 20;
+                    else fontSize = 24;
+                }
+
+                document.body.style.fontSize = fontSize + "px";
+                localStorage.setItem("fontSize", fontSize);
+                alert(`Font size adjusted to ${fontSize}px based on vision condition.`);
+            } else {
+                alert("Please enter valid numbers for both eyes.");
+            }
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem("loggedIn") === "true") {
+                document.getElementById('signupContainer').classList.add('hidden');
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+            }
+
+            let storedFontSize = localStorage.getItem("fontSize");
+            if (storedFontSize) {
+                document.body.style.fontSize = storedFontSize + "px";
+            }
+        };
+    </script>
+</body>
+</html>
